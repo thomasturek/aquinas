@@ -1,4 +1,6 @@
-# Comprehensive Guide to Setting Up and Running Aquinas
+# Aquinas
+
+![Aquinas Logo](./assets/logo.png)
 
 ## Introduction to Aquinas
 
