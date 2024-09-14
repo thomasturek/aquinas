@@ -1,6 +1,6 @@
 # Aquinas
 
-![Aquinas Logo](assets/logo.png)
+![Aquinas Logo](./assets/logo.png)
 
 ## Introduction to Aquinas
 
