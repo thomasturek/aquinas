@@ -1,33 +1,21 @@
-import { Agent, UserProxyAgent, AssistantAgent } from 'pyautogen';
-
-const analyzerAgent = new AssistantAgent('analyzer', {
-  llm_config: {
-    model: 'gpt-3.5-turbo',
-    temperature: 0.7,
-  },
-});
-
-const replyGeneratorAgent = new AssistantAgent('replyGenerator', {
-  llm_config: {
-    model: 'gpt-3.5-turbo',
-    temperature: 0.9,
-  },
-});
-
-const userProxyAgent = new UserProxyAgent('user');
-
-export async function analyzeTweetAndGenerateReply(tweetContent: string) {
-  const result = await userProxyAgent.initiateChatWithAgent(
-    analyzerAgent,
-    `Analyze this tweet: "${tweetContent}"`
-  );
-
-  const analysis = result.messages[result.messages.length - 1].content;
-
-  const replyResult = await userProxyAgent.initiateChatWithAgent(
-    replyGeneratorAgent,
-    `Based on this analysis: "${analysis}", generate a witty and relevant reply.`
-  );
-
-  return replyResult.messages[replyResult.messages.length - 1].content;
-}
+async function analyzeTweetAndGenerateReply(tweetContent: string): Promise<string> {
+    try {
+      const response = await fetch('/api/analyze-and-reply', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ tweet: tweetContent }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to analyze tweet and generate reply');
+      }
+      
+      const data = await response.json();
+      return data.reply;
+    } catch (error) {
+      console.error('Error in analyzeTweetAndGenerateReply:', error);
+      throw error;
+    }
+  }

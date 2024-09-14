@@ -1,26 +1,33 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import Dashboard from './components/Dashboard';
+import Auth from './components/Auth';
+import './styles.css';
 
-function App() {
+const App: React.FC = () => {
+  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+
+  const handleLogin = (newToken: string) => {
+    localStorage.setItem('token', newToken);
+    setToken(newToken);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setToken(null);
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {token ? (
+        <>
+          <Dashboard token={token} />
+          <button onClick={handleLogout}>Logout</button>
+        </>
+      ) : (
+        <Auth onLogin={handleLogin} />
+      )}
     </div>
   );
-}
+};
 
 export default App;
