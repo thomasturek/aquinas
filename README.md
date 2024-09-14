@@ -1,7 +1,5 @@
 # Comprehensive Guide to Setting Up and Running Aquinas
 
-![Aquinas Logo](assets/logo.png)
-
 ## Introduction to Aquinas
 
 Aquinas is an innovative social media engagement tool designed to enhance customer interaction by adding a touch of fun to brand communication. The tool continuously monitors Twitter for mentions of specific topics or keywords of interest. Through a multi-agent workflow powered by AutoGen, it analyzes the context and content of these tweets to generate witty and relevant reply suggestions that can be automatically sent.
