@@ -18,7 +18,12 @@ const port = process.env.PORT || 3001;
 
 app.use(express.json());
 
-const tweetQueue: any[] = [];
+interface TweetAnalysis {
+  original_tweet: string;
+  analysis: string;
+  screening: string;
+  suggested_reply: string | null;
+}
 
 app.post('/api/register', async (req, res) => {
   try {
@@ -30,7 +35,7 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-async function analyzeTweetAndGenerateReply(tweetContent: string): Promise<string> {
+async function analyzeTweetAndGenerateReply(tweetContent: string): Promise<TweetAnalysis> {
   try {
     const options: Options = {
       mode: 'text',
@@ -40,7 +45,7 @@ async function analyzeTweetAndGenerateReply(tweetContent: string): Promise<strin
 
     const scriptPath = path.join(__dirname, '..', 'autogen_service.py');
     const results = await PythonShell.run(scriptPath, options);
-    return results[0] || '';
+    return JSON.parse(results[0]) as TweetAnalysis;
   } catch (error) {
     console.error('Error running Python script:', error);
     throw error;
@@ -48,7 +53,7 @@ async function analyzeTweetAndGenerateReply(tweetContent: string): Promise<strin
 }
 
 async function fetchTweetsFromDatabase() {
-  // In a real application, this would fetch tweets, for now just some dummy data :)
+  // In a real application, this would fetch tweets using their API
   return Array.from({ length: 100 }, (_, i) => ({
     id: i,
     text: `This is tweet number ${i}`,
@@ -81,7 +86,6 @@ app.get('/api/tweets', authenticateToken, async (req, res) => {
     return res.json(cachedTweets);
   }
 
-  // Fetch tweets from the database or API
   const allTweets = await fetchTweetsFromDatabase();
   const paginatedTweets = allTweets.slice(startIndex, endIndex);
   
@@ -91,7 +95,6 @@ app.get('/api/tweets', authenticateToken, async (req, res) => {
     totalPages: Math.ceil(allTweets.length / limit)
   };
 
-  // Cache the paginated tweets for 5 minutes
   await cacheData(`tweets_page_${page}`, result, 300);
   
   res.json(result);
@@ -107,6 +110,16 @@ app.post('/api/reply', authenticateToken, async (req, res) => {
   }
 });
 
+app.post('/api/analyze-tweet', authenticateToken, async (req, res) => {
+  const { tweetContent } = req.body;
+  try {
+    const analysis = await analyzeTweetAndGenerateReply(tweetContent);
+    res.json(analysis);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+});
+
 io.on('connection', (socket) => {
   console.log('A user connected');
   socket.on('disconnect', () => {
@@ -116,9 +129,9 @@ io.on('connection', (socket) => {
 
 const stream = streamTweets(['your', 'keywords', 'here'], async (tweet) => {
   try {
-    const suggestedReply = await analyzeTweetAndGenerateReply(tweet.text);
-    const tweetWithReply = { ...tweet, suggestedReply };
-    io.emit('newTweet', tweetWithReply);
+    const analysis = await analyzeTweetAndGenerateReply(tweet.text);
+    const tweetWithAnalysis = { ...tweet, ...analysis };
+    io.emit('newTweet', tweetWithAnalysis);
   } catch (error) {
     console.error('Error processing tweet:', error);
   }
@@ -130,3 +143,4 @@ server.listen(port, () => {
 
 app.use('/api/tweets', authenticateToken);
 app.use('/api/reply', authenticateToken);
+app.use('/api/analyze-tweet', authenticateToken);

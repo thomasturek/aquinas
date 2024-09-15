@@ -1,268 +1,206 @@
-# Aquinas
+# Aquinas: AI-Powered Social Media Engagement Tool
 
 ![Aquinas Logo](./assets/logo.png)
 
-## Introduction to Aquinas
+## Introduction
 
-Aquinas is an innovative social media engagement tool designed to enhance customer interaction by adding a touch of fun to brand communication. The tool continuously monitors Twitter for mentions of specific topics or keywords of interest. Through a multi-agent workflow powered by AutoGen, it analyzes the context and content of these tweets to generate witty and relevant reply suggestions that can be automatically sent.
+Aquinas is an innovative social media engagement tool designed to enhance customer interaction by adding a touch of fun and intelligence to brand communication. Leveraging the power of AutoGen, a multi-agent AI framework, Aquinas continuously monitors Twitter for mentions of specific topics or keywords of interest. It then analyzes the context and content of these tweets to generate witty and relevant reply suggestions, which can be reviewed and sent with human approval.
+
+## Example Use Case
+
+John, the owner of a coffee brand called "BeanVibe," wants to ensure that his brand engages effectively with customers on social media. He uses Aquinas, which automatically monitors Twitter for mentions of "BeanVibe" or related keywords like "coffee" or "morning brew." When a user tweets:
+
+“Just had the best cup of coffee from @BeanVibe to kickstart my day!”
+
+Aquinas detects the mention and, using its AI framework, generates a reply suggestion:
+
+“We’re thrilled to be part of your morning routine! ☕ What’s your favorite blend from BeanVibe?”
+
+John reviews the suggested reply and with a single click approves it to be sent automatically, adding a personal touch without the need for manual crafting.
 
 ## Table of Contents
-1. [Prerequisites](#prerequisites)
-2. [Project Structure](#project-structure)
-3. [Backend Setup](#backend-setup)
-4. [AutoGen Integration](#autogen-integration)
-5. [Frontend Setup](#frontend-setup)
-6. [Twitter API Configuration](#twitter-api-configuration)
-7. [Running the Application](#running-the-application)
-8. [Deployment](#deployment)
-9. [Troubleshooting](#troubleshooting)
+1. [Key Features](#key-features)
+2. [Technology Stack](#technology-stack)
+3. [AutoGen Implementation](#autogen-implementation)
+4. [Prerequisites](#prerequisites)
+5. [Installation and Setup](#installation-and-setup)
+6. [Running the Application](#running-the-application)
+7. [Project Structure](#project-structure)
+8. [Configuration](#configuration)
+9. [Deployment](#deployment)
+10. [Troubleshooting](#troubleshooting)
+11. [Contributing](#contributing)
+12. [License](#license)
+
+## Key Features
+
+- Real-time Twitter monitoring for brand-relevant tweets
+- AI-powered tweet analysis and response generation
+- Multi-agent workflow for nuanced understanding and creative replies
+- Human-in-the-loop approval process for quality control
+- Web-based dashboard for tweet management and response approval
+
+## Technology Stack
+
+- Backend: Node.js with Express, TypeScript
+- Frontend: React, TypeScript
+- AI Framework: AutoGen (Python)
+- Database: Redis for caching
+- APIs: Twitter API for tweet streaming and posting
+- Authentication: JWT for secure user sessions
+
+## AutoGen Implementation
+
+Aquinas utilizes AutoGen, a powerful framework for building multi-agent AI systems, to analyze tweets and generate appropriate responses. This implementation is crucial for providing intelligent, context-aware, and brand-appropriate replies at scale.
+
+### AutoGen Workflow
+
+1. **Tweet Capture**: The Node.js backend captures relevant tweets using the Twitter streaming API.
+2. **AutoGen Processing**: Captured tweets are sent to the AutoGen service for analysis and response generation.
+3. **Multi-Agent Analysis**: Within AutoGen, multiple AI agents collaborate to understand and respond to the tweet.
+4. **Human Approval**: Generated responses are sent back to the Node.js backend and presented for human approval via the frontend interface.
+5. **Reply Posting**: Approved responses are posted back to Twitter using the Twitter API.
+
+### AutoGen Agents and Their Roles
+
+1. **Tweet Catcher Agent**
+   - Role: Monitors incoming tweets and identifies those relevant to the brand.
+   - Implementation:
+     ```python
+     tweet_catcher = autogen.AssistantAgent(
+         name="TweetCatcher",
+         llm_config={"config_list": config_list},
+         system_message="You are responsible for monitoring incoming tweets and identifying those that mention the company's name. Analyze the content and sentiment of these tweets."
+     )
+     ```
+
+2. **Content Screener Agent**
+   - Role: Reviews flagged tweets to assess appropriateness for response.
+   - Implementation:
+     ```python
+     content_screener = autogen.AssistantAgent(
+         name="ContentScreener",
+         llm_config={"config_list": config_list},
+         system_message="Your role is to review tweets flagged by the TweetCatcher. Assess if the content is appropriate to respond to. Consider factors such as sentiment, potential controversy, and relevance to the company."
+     )
+     ```
+
+3. **Response Generator Agent**
+   - Role: Creates witty and relevant reply suggestions for approved tweets.
+   - Implementation:
+     ```python
+     response_generator = autogen.AssistantAgent(
+         name="ResponseGenerator",
+         llm_config={"config_list": config_list},
+         system_message="Based on the approved tweets, generate witty and relevant reply suggestions. Ensure the responses align with the company's brand voice and are engaging for the audience."
+     )
+     ```
+
+4. **Human Proxy Agent**
+   - Role: Simulates human approval in the automated workflow (for testing and development).
+   - Implementation:
+     ```python
+     human_proxy = autogen.UserProxyAgent(
+         name="HumanApprover",
+         human_input_mode="NEVER",
+         max_consecutive_auto_reply=1,
+         is_termination_msg=lambda x: x.get("content", "").rstrip().endswith("APPROVE"),
+         system_message="You are a human approver. Review the suggested response and type 'APPROVE' if it's good to go, or provide feedback for improvements."
+     )
+     ```
+
+   Note: In the production environment, this will be replaced with actual human input through the frontend interface.
 
 ## Prerequisites
 
-Before you begin, ensure you have the following installed on your system:
+Before setting up Aquinas, ensure you have the following installed:
+
+- Node.js (v14.x or higher)
+- npm (v6.x or higher)
+- Python (v3.8 or higher)
+- Redis (v6.x or higher)
 - Git
-- Node.js 14.x or higher
-- npm 6.x or higher
-- Python 3.8 or higher
-- Redis 6.x or higher
+
+You'll also need:
 - A Twitter Developer Account with API keys
+- An OpenAI API key for AutoGen
 
-## Project Structure
+## Installation and Setup
 
-The Aquinas project consists of three main components:
-1. Node.js Backend: Handles API requests, Twitter stream processing, and communication with AutoGen.
-2. Python AutoGen Service: Provides AI-powered tweet analysis and reply generation.
-3. React Frontend: User interface for interacting with the system.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/aquinas.git
+   cd aquinas
 
-## Backend Setup
+2. Install backend dependencies:
 
-### 1. Clone the Repository
+    bashCopynpm install
 
-```bash
-git clone https://github.com/thomasturek/aquinas.git
-cd aquinas
-```
-
-### 2. Install Backend Dependencies
-
-```bash
-npm install
-```
-
-This command installs all necessary Node.js packages, including `express`, `socket.io`, `twit`, and `python-shell`.
-
-### 3. Configure Environment Variables
-
-Create a `.env` file in the project root:
-
-```bash
-touch .env
-```
-
-Add the following variables (replace with your actual values):
-
-```
-TWITTER_CONSUMER_KEY=your_consumer_key
-TWITTER_CONSUMER_SECRET=your_consumer_secret
-TWITTER_ACCESS_TOKEN=your_access_token
-TWITTER_ACCESS_TOKEN_SECRET=your_access_token_secret
-JWT_SECRET=your_jwt_secret
-REDIS_URL=redis://localhost:6379
-OPENAI_API_KEY=your_openai_api_key
-```
-
-### 4. Set Up Redis
-
-Ensure Redis is installed and running on your system. The default configuration assumes Redis is running on localhost:6379. If your setup differs, update the `REDIS_URL` in the `.env` file.
-
-### 5. Prepare the Backend
-
-The backend is written in TypeScript. Ensure all TypeScript files are compiled:
-
-```bash
-npm run build
-```
-
-This command should be defined in your `package.json` to compile TypeScript files to JavaScript.
-
-## AutoGen Integration
-
-AutoGen is a key component of Aquinas, providing AI-powered analysis and reply generation. It's integrated into the Node.js backend but runs as a separate Python service.
-
-### 1. Set Up Python Environment
-
-Create and activate a virtual environment:
-
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
-```
-
-### 2. Install AutoGen Dependencies
-
-```bash
-pip install pyautogen openai
-```
-
-### 3. Configure AutoGen Service
-
-Create `autogen_service.py` in the project root:
-
-```python
-import sys
-import autogen
-
-def analyze_tweet_and_generate_reply(tweet_content):
-    config_list = [{'model': 'gpt-3.5-turbo', 'api_key': 'your_openai_api_key'}]
+3. Set up the Python environment for AutoGen:
     
-    analyzer = autogen.AssistantAgent(
-        name="analyzer",
-        llm_config={
-            "config_list": config_list,
-            "temperature": 0.7,
-        }
-    )
-    
-    reply_generator = autogen.AssistantAgent(
-        name="reply_generator",
-        llm_config={
-            "config_list": config_list,
-            "temperature": 0.9,
-        }
-    )
-    
-    user_proxy = autogen.UserProxyAgent(name="user")
-    
-    analysis = user_proxy.initiate_chat(analyzer, message=f"Analyze this tweet: '{tweet_content}'")
-    reply = user_proxy.initiate_chat(reply_generator, message=f"Based on this analysis: '{analysis}', generate a witty and relevant reply.")
-    
-    return reply
+    bashCopypython -m venv venv
+    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+    pip install pyautogen openai
 
-if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        tweet_content = sys.argv[1]
-        reply = analyze_tweet_and_generate_reply(tweet_content)
-        print(reply)
-```
+4. Install frontend dependencies:
 
-Replace `'your_openai_api_key'` with your actual OpenAI API key.
+    bashCopycd frontend
+    npm install
+    cd ..
 
-### 4. Integrate AutoGen with Node.js Backend
+5. Create and configure the .env file in the project root:
 
-Update the `analyzeTweetAndGenerateReply` function in `server.ts`:
+    CopyTWITTER_CONSUMER_KEY=your_twitter_consumer_key
+    TWITTER_CONSUMER_SECRET=your_twitter_consumer_secret
+    TWITTER_ACCESS_TOKEN=your_twitter_access_token
+    TWITTER_ACCESS_TOKEN_SECRET=your_twitter_access_token_secret
+    JWT_SECRET=your_jwt_secret
+    REDIS_URL=redis://localhost:6379
+    OPENAI_API_KEY=your_openai_api_key
 
-```typescript
-import { PythonShell, Options } from 'python-shell';
-import path from 'path';
+6. Create and configure the .env file in the frontend directory:
 
-async function analyzeTweetAndGenerateReply(tweetContent: string): Promise<string> {
-  try {
-    const options: Options = {
-      mode: 'text',
-      pythonPath: 'python', // Update this path if necessary
-      args: [tweetContent]
-    };
+    CopyREACT_APP_API_URL=http://localhost:3001
 
-    const scriptPath = path.join(__dirname, '..', 'autogen_service.py');
-    const results = await PythonShell.run(scriptPath, options);
-    return results[0] || '';
-  } catch (error) {
-    console.error('Error running Python script:', error);
-    throw error;
-  }
-}
-```
-
-This function calls the Python AutoGen script to analyze tweets and generate replies.
-
-## Frontend Setup
-
-### 1. Navigate to Frontend Directory
-
-```bash
-cd frontend
-```
-
-### 2. Install Frontend Dependencies
-
-```bash
-npm install
-```
-
-### 3. Configure Frontend Environment
-
-Create a `.env` file in the frontend directory:
-
-```bash
-touch .env
-```
-
-Add:
-
-```
-REACT_APP_API_URL=http://localhost:3001
-```
-
-### 4. Build the Frontend
-
-```bash
-npm run build
-```
-
-## Twitter API Configuration
-
-1. Log in to your Twitter Developer account (https://developer.twitter.com/).
-2. Create a new application or use an existing one.
-3. Generate Consumer Keys and Access Tokens.
-4. Update the `.env` file in the project root with these credentials.
-
-## Running the Application
+ ## Running the Application
 
 1. Start Redis:
-   ```bash
-   redis-server
-   ```
 
-2. Start the Node.js backend:
-   ```bash
-   npm start
-   ```
+    bashCopyredis-server
 
-3. In a new terminal, navigate to the frontend directory and start the development server:
-   ```bash
-   cd frontend
-   npm start
-   ```
+2. In a new terminal, start the Node.js backend:
 
-4. Open a web browser and go to `http://localhost:3000`.
+    bashCopynpm run build
+    npm start
 
-The application should now be running, fetching tweets, and generating replies using AutoGen.
+3. In another terminal, start the React frontend:
+
+    bashCopycd frontend
+    npm start
+
+4. Open your browser and navigate to http://localhost:3000 to access the Aquinas dashboard.
+
+## Configuration
+
+Adjust the config_list in autogen_service.py to change the AI model or parameters.
+
+Modify the twitterService.ts to adjust tweet filtering criteria.
+
+Update the frontend .env file if your backend runs on a different port or host.
 
 ## Deployment
 
 For production deployment:
 
-1. Set up a production Redis instance.
+1. Set up a production-grade Redis instance.
 2. Use a process manager like PM2 to run the Node.js backend.
-3. Set up a reverse proxy (e.g., Nginx) to serve the frontend and route API requests to the backend.
-4. Use HTTPS for secure connections.
-5. Set up environment variables on your production server.
+3. Build the React frontend (npm run build in the frontend directory) and serve it with a web server like Nginx.
+4. Set up HTTPS for secure connections.
+5. Configure environment variables on your production server.
 
 ## Troubleshooting
 
-- **Issue**: Backend fails to start
-  **Solution**: Check if all environment variables are set correctly and Redis is running.
-
-- **Issue**: AutoGen script fails
-  **Solution**: Ensure Python environment is set up correctly and all dependencies are installed.
-
-- **Issue**: Tweets are not being fetched
-  **Solution**: Verify your Twitter API credentials and check the backend logs for any error messages.
-
-- **Issue**: Automatic replies are not being generated
-  **Solution**: Check the AutoGen script logs and ensure it's being called correctly from the Node.js backend.
-
-- **Issue**: Redis connection fails
-  **Solution**: Verify Redis is running and the REDIS_URL is correct in your .env file.
-
-For any other issues, please check the application logs and refer to the project's GitHub issues page.
+1. If tweets are not being captured, check your Twitter API credentials and the console for error messages.
+2. For AutoGen-related issues, ensure the Python environment is correctly set up and the OPENAI_API_KEY is valid.
+3. If the frontend is not connecting to the backend, verify the REACT_APP_API_URL in the frontend .env file.
+4. For Redis connection issues, confirm Redis is running and the REDIS_URL is correct.
