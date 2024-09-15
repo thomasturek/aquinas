@@ -94,7 +94,7 @@
   }
   
   .login-button {
-    width: 100%;
+    width: 428px;
     padding: 0.75rem;
     background-color: var(--primary-color);
     color: white;
@@ -118,7 +118,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
+    width: 428px;
     padding: 0.75rem;
     background-color: white;
     border: 1px solid var(--input-border);
