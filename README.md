@@ -133,23 +133,23 @@ You'll also need:
    cd aquinas
 
 2. Install backend dependencies:
-
+    ```bash
     bashCopynpm install
 
 3. Set up the Python environment for AutoGen:
-    
+    ```bash
     bashCopypython -m venv venv
     source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
     pip install pyautogen openai
 
 4. Install frontend dependencies:
-
+    ```bash
     bashCopycd frontend
     npm install
     cd ..
 
 5. Create and configure the .env file in the project root:
-
+    ```bash
     CopyTWITTER_CONSUMER_KEY=your_twitter_consumer_key
     TWITTER_CONSUMER_SECRET=your_twitter_consumer_secret
     TWITTER_ACCESS_TOKEN=your_twitter_access_token
@@ -159,22 +159,22 @@ You'll also need:
     OPENAI_API_KEY=your_openai_api_key
 
 6. Create and configure the .env file in the frontend directory:
-
+    ```bash
     CopyREACT_APP_API_URL=http://localhost:3001
 
  ## Running the Application
 
 1. Start Redis:
-
+    ```bash
     bashCopyredis-server
 
 2. In a new terminal, start the Node.js backend:
-
+    ```bash 
     bashCopynpm run build
     npm start
 
 3. In another terminal, start the React frontend:
-
+    ```bash
     bashCopycd frontend
     npm start
 
