@@ -4,7 +4,7 @@
 
 ## Introduction
 
-Aquinas is an innovative social media engagement tool designed to enhance customer interaction by adding a touch of fun and intelligence to brand communication. Leveraging the power of AutoGen, a multi-agent AI framework, Aquinas continuously monitors Twitter for mentions of specific topics or keywords of interest. It then analyzes the context and content of these tweets to generate witty and relevant reply suggestions, which can be reviewed and sent with human approval.
+Aquinas is an innovative social media engagement tool designed to enhance customer interaction by adding a touch of fun and intelligence to brand communication. Leveraging the power of AG2 (Formerly AutoGen), a multi-agent AI framework, Aquinas continuously monitors Twitter for mentions of specific topics or keywords of interest. It then analyzes the context and content of these tweets to generate witty and relevant reply suggestions, which can be reviewed and sent with human approval.
 
 ## Example Use Case
 
@@ -21,7 +21,7 @@ John reviews the suggested reply and with a single click approves it to be sent 
 ## Table of Contents
 1. [Key Features](#key-features)
 2. [Technology Stack](#technology-stack)
-3. [AutoGen Implementation](#autogen-implementation)
+3. [AG2 Implementation](#AG2-implementation)
 4. [Prerequisites](#prerequisites)
 5. [Installation and Setup](#installation-and-setup)
 6. [Running the Application](#running-the-application)
@@ -44,24 +44,24 @@ John reviews the suggested reply and with a single click approves it to be sent 
 
 - Backend: Node.js with Express, TypeScript
 - Frontend: React, TypeScript
-- AI Framework: AutoGen (Python)
+- AI Framework: AG2 (Formerly AutoGen) (Python)
 - Database: Redis for caching
 - APIs: Twitter API for tweet streaming and posting
 - Authentication: JWT for secure user sessions
 
-## AutoGen Implementation
+## AG2 Implementation
 
-Aquinas utilizes AutoGen, a powerful framework for building multi-agent AI systems, to analyze tweets and generate appropriate responses. This implementation is crucial for providing intelligent, context-aware, and brand-appropriate replies at scale.
+Aquinas utilizes [AG2](https://github.com/ag2ai/ag2?tab=readme-ov-file) (Formerly AutoGen), a powerful framework for building multi-agent AI systems, to analyze tweets and generate appropriate responses. This implementation is crucial for providing intelligent, context-aware, and brand-appropriate replies at scale. This project is also collected in [Build with AG2](https://github.com/ag2ai/build-with-ag2), you can checkout more projects built with AG2.
 
-### AutoGen Workflow
+### AG2 Workflow
 
 1. **Tweet Capture**: The Node.js backend captures relevant tweets using the Twitter streaming API.
-2. **AutoGen Processing**: Captured tweets are sent to the AutoGen service for analysis and response generation.
-3. **Multi-Agent Analysis**: Within AutoGen, multiple AI agents collaborate to understand and respond to the tweet.
+2. **AG2 Processing**: Captured tweets are sent to the AG2 service for analysis and response generation.
+3. **Multi-Agent Analysis**: Within AG2, multiple AI agents collaborate to understand and respond to the tweet.
 4. **Human Approval**: Generated responses are sent back to the Node.js backend and presented for human approval via the frontend interface.
 5. **Reply Posting**: Approved responses are posted back to Twitter using the Twitter API.
 
-### AutoGen Agents and Their Roles
+### AG2 Agents and Their Roles
 
 1. **Tweet Catcher Agent**
    - Role: Monitors incoming tweets and identifies those relevant to the brand.
@@ -123,7 +123,7 @@ Before setting up Aquinas, ensure you have the following installed:
 
 You'll also need:
 - A Twitter Developer Account with API keys
-- An OpenAI API key for AutoGen
+- An OpenAI API key for AG2
 
 ## Installation and Setup
 
@@ -136,7 +136,7 @@ You'll also need:
     ```bash
     bashCopynpm install
 
-3. Set up the Python environment for AutoGen:
+3. Set up the Python environment for AG2:
     ```bash
     bashCopypython -m venv venv
     source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
