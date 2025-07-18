@@ -140,7 +140,7 @@ You'll also need:
     ```bash
     bashCopypython -m venv venv
     source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
-    pip install pyautogen openai
+    pip install ag2 openai
 
 4. Install frontend dependencies:
     ```bash
